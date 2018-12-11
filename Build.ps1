@@ -1,11 +1,13 @@
 ﻿
-Set-Location "P:\Powershell\MarTech"
+Set-Location $PSScriptRoot
 
 $CurrentRelease = "Build00001"
 $Environment = "Diamond"
 $LogFileName = 'Log_' + $CurrentRelease + "_" +  $(get-date).ToString("yyyyMMdd_HHmmss") + ".txt"
 
-$LogFileNameFull = "P:\Powershell\Log\" + $LogFileName
+$LogFileNameFull = "C:\MarTechLog\" + $LogFileName
+
+$LogFileNameFull
 
 if (Test-Path $LogFileNameFull) 
 {

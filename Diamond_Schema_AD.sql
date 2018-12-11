@@ -3,6 +3,7 @@
 
 use Diamond
 
+
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'AD')
 BEGIN
 EXEC('CREATE SCHEMA AD')
