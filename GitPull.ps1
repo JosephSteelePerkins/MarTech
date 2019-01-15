@@ -17,10 +17,13 @@ New-Item $LogFileNameFull | out-null
 
     #then, try to get a releaseID
 
-
 $line = ""
 
 $ErrorActionPreference = "stop"
+
+#also needs to handle this error
+#error: pathspec 'release67' did not match any file(s) known to git
+
 
 try
 {
