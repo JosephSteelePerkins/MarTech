@@ -65,7 +65,7 @@ $ErrorActionPreference = "stop"
 
 try{
 
-git checkout -b $Release origin/$Release
+git checkout -b $ReleaseID origin/$ReleaseID
 
 }
 catch {
@@ -83,7 +83,7 @@ $GitError = $_ | Select-String  -Pattern "fatal"
     elseif ($GitError -like "fatal: A branch named * already exists.")
     {
     $ErrorActionPreference = "continue"
-    git checkout $Release
+    git checkout $ReleaseID
     git pull
     Add-Content $LogFileNameFull 'Success'}
     else
