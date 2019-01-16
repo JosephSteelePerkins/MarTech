@@ -1,5 +1,8 @@
 ﻿Set-Location $PSScriptRoot
 
+
+Set-Location 'C:\Users\User\MarTech'
+
     #first prepare the log file.
 
 
@@ -21,8 +24,6 @@ $line = ""
 
 $ErrorActionPreference = "stop"
 
-#also needs to handle this error
-#error: pathspec 'release67' did not match any file(s) known to git
 
 
 try
