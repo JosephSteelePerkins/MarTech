@@ -44,6 +44,8 @@ Get-ChildItem  -Filter $Environment*.sql |
     #loop through each file
 
 Foreach-Object {
+
+Write-Host $_.FullName
     
         #get the contents of the file and put into a variable. At this point, it doesn't know which files need to be filtered. 
     
@@ -109,6 +111,7 @@ try
     #try to run the contents of the file against the locatl database
 
 Invoke-Sqlcmd -InputFile $d.Key -ServerInstance "(local)" -ErrorAction Stop
+Add-Content $LogFileNameFull ($d.Key + " - Succeeded")
 }
 catch
 {
@@ -116,7 +119,7 @@ catch
     #if it fails then increment the Errored variable and add the error message to the log file
 
 $Errored = $Errored + 1
-Add-Content $LogFileNameFull ($d.Key + " " + $_)
+Add-Content $LogFileNameFull ($d.Key + " " + $_) 
 
 }
 
@@ -126,5 +129,5 @@ Add-Content $LogFileNameFull ($d.Key + " " + $_)
 
 if ($Errored -eq 0)
 {
-Add-Content $LogFileNameFull "Success"
+Add-Content $LogFileNameFull "Build was successful"
 }
