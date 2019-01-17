@@ -1,17 +1,23 @@
 ﻿
+param ([string]$BuildID='xxxxx', [string]$Rollback='False',[string]$Product,[string]$Test = 'True')#
+
+
 Set-Location $PSScriptRoot
 
     #enter the ID of the build/release. This will appear in all the scripts being run as part of this build.
 
-$CurrentRelease = "Build00002"
+#$BuildID = "Build00001"
 
     #enter the environment
 
-$Environment = "Diamond"
+#$Product = "Diamond"
 
-    #set the name of the log file. This is the build/release ID puls the date and time
+    #set the name of the log file. This is the build/release ID puls the date and time. If this is a test run then amend the log file name
 
-$LogFileName = 'Log_' + $CurrentRelease + "_" +  $(get-date).ToString("yyyyMMdd_HHmmss") + ".txt"
+    if ($Test-eq 'True')
+    {$LogFileName = 'Log_TEST_' + $BuildID + "_" +  $(get-date).ToString("yyyyMMdd_HHmmss") + ".txt"}
+    else
+    {$LogFileName = 'Log_' + $BuildID + "_" +  $(get-date).ToString("yyyyMMdd_HHmmss") + ".txt"}
 
     #then append the name of the log file to the path. This will always be C:\MarTechLog\ so it is a prerequiste of every environment that this folder exists
 
@@ -35,29 +41,36 @@ $Scripts = @{}
 
 $Errored = 0
 
-    #"--" + $CurrentRelease
+    #"--" + $BuildID
 
     #get every file that begins with the environment variable and ends in SQL
 
-Get-ChildItem  -Filter $Environment*.sql | 
+
+
+
+Get-ChildItem  -Filter $Product*.sql | 
 
     #loop through each file
 
 Foreach-Object {
 
-Write-Host $_.FullName
-    
+   
         #get the contents of the file and put into a variable. At this point, it doesn't know which files need to be filtered. 
-    
+
     $content = Get-Content $_.FullName
     
         #initialise the line variable
 
     $line = ""
 
-        #get the lines from the file contents that match the build/release ID. Assign to the line variable
+        #get the lines from the file contents that match the buildID. Assign to the line variable
 
-    $content | Where-Object {$_ -match ("--" + $CurrentRelease)} |  Set-Variable  "line" 
+        #Write-Host 'Does BuildID equal Build00001' ($BuildID -eq 'Build00001')
+        #$BuildID = 'Build00001'
+
+    $content | Where-Object {$_ -match ("--" + $BuildID)} |  Set-Variable  "line" 
+
+         #Write-Host $line 
 
         #if the line variable is not empty (ie the file contains the release ID)...
 
@@ -96,6 +109,8 @@ Write-Host $_.FullName
     }
 }
 
+    
+
     #re-order the hash table by the "value" ie the release order 
 
 $Scripts = $Scripts.GetEnumerator() | sort -Property value
@@ -108,10 +123,20 @@ ForEach ($d in $Scripts)
 try
 {
 
-    #try to run the contents of the file against the locatl database
 
-Invoke-Sqlcmd -InputFile $d.Key -ServerInstance "(local)" -ErrorAction Stop
-Add-Content $LogFileNameFull ($d.Key + " - Succeeded")
+
+    #try to run the contents of the file against the local database. If Rollback is true then only run the rollback script
+
+    if (($Rollback -eq 'True' -and $d.Key -like '*rollback*') -or ($Rollback -eq 'False' -and $d.Key -notlike '*rollback*'))
+    {
+     if ($Test-eq 'True')
+        {Add-Content $LogFileNameFull ($d.Key + " - Not Run")}
+    else
+        {Invoke-Sqlcmd -InputFile $d.Key -ServerInstance "(local)" -ErrorAction Stop
+        Add-Content $LogFileNameFull ($d.Key + " - Succeeded")}
+   
+   }
+
 }
 catch
 {
