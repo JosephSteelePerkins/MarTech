@@ -1,5 +1,5 @@
-﻿#Set-Location $PSScriptRoot
-Set-Location 'C:\Users\User\MarTech'
+﻿Set-Location $PSScriptRoot
+#Set-Location 'C:\Users\User\MarTech'
 
     #first prepare the log file.
 
