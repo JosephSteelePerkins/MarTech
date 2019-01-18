@@ -1,5 +1,5 @@
-﻿Set-Location $PSScriptRoot
-#Set-Location 'C:\Users\User\MarTech'
+﻿#Set-Location $PSScriptRoot
+Set-Location 'C:\Users\User\MarTech'
 
     #first prepare the log file.
 
@@ -71,18 +71,21 @@ $outputm = git checkout -b $ReleaseID origin/$ReleaseID 2>&1
 $GitError = $outputm | Select-String  -Pattern "fatal"
 
  
-    if (! $GitError)
-    {
-        #if there is not then add success to the log
-       
-    Add-Content $LogFileNameFull 'Success'
-    }
-    elseif ($GitError -like "fatal: A branch named * already exists.")
-    {
-    git checkout $ReleaseID
-    git pull
-    Add-Content $LogFileNameFull 'Success'}
-    else
-    {
-    Add-Content $LogFileNameFull $GitError
-    }
+if (! $GitError )
+{
+    #if there is not then add success to the log
+$currentb = git status 2>&1
+Add-Content $LogFileNameFull 'Success'
+Add-Content $LogFileNameFull $currentb
+}
+elseif ($GitError -like "fatal: A branch named * already exists.")
+{
+git checkout $ReleaseID
+git pull
+$currentb = git status 2>&1
+Add-Content $LogFileNameFull 'Success'
+Add-Content $LogFileNameFull $currentb}
+else
+{
+Add-Content $LogFileNameFull $GitError
+}
