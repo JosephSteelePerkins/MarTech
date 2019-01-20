@@ -11,6 +11,7 @@ Set-Location $PSScriptRoot
     #enter the environment
 
 #$Product = "Diamond"
+#$Test = "False"
 
     #set the name of the log file. This is the build/release ID puls the date and time. If this is a test run then amend the log file name
 
@@ -132,7 +133,13 @@ try
      if ($Test-eq 'True')
         {Add-Content $LogFileNameFull ($d.Key + " - Not Run")}
     else
-        {Invoke-Sqlcmd -InputFile $d.Key -ServerInstance "(local)" -ErrorAction Stop
+        {
+        if ($env:USERNAME -eq 'DBA')
+            {$InstanceName = "Live"}
+        else {$InstanceName = "(local)"}
+
+
+        Invoke-Sqlcmd -InputFile $d.Key -ServerInstance $InstanceName -ErrorAction Stop
         Add-Content $LogFileNameFull ($d.Key + " - Succeeded")}
    
    }
