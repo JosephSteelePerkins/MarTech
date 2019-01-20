@@ -135,11 +135,12 @@ try
     else
         {
         if ($env:USERNAME -eq 'DBA')
-            {$InstanceName = "Live"}
+            {$InstanceName = "DESKTOP-CGRB0T0\LIVE"}
         else {$InstanceName = "(local)"}
 
 
         Invoke-Sqlcmd -InputFile $d.Key -ServerInstance $InstanceName -ErrorAction Stop
+        #Invoke-Sqlcmd -InputFile $d.Key -ServerInstance $InstanceName -ErrorAction Stop
         Add-Content $LogFileNameFull ($d.Key + " - Succeeded")}
    
    }
