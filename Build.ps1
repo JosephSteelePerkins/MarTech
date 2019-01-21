@@ -1,5 +1,5 @@
 ﻿
-param ([string]$BuildID='xxxxx', [string]$Rollback='False',[string]$Product,[string]$Test = 'True')#
+param ([string]$BuildID='xxxxx', [string]$Rollback='False',[string]$Product,[string]$Test = 'True')
 
 
 Set-Location $PSScriptRoot
@@ -12,13 +12,23 @@ Set-Location $PSScriptRoot
 
 #$Product = "Diamond"
 #$Test = "False"
+#$Rollback = "True"
+
+    #The log file will be called Test, Build or Rollback based on the parameters
+
+if ($Test -eq  'True')
+{$LogFileNameBit = 'TEST_'}
+else
+{$LogFileNameBit = ''}
+
+if ($Rollback -eq  'True')
+{$LogFileNameBit2 = 'Rollback'}
+else
+{$LogFileNameBit2 = 'Build'}
 
     #set the name of the log file. This is the build/release ID puls the date and time. If this is a test run then amend the log file name
 
-    if ($Test-eq 'True')
-    {$LogFileName = 'Log_TEST_' + $BuildID + "_" +  $(get-date).ToString("yyyyMMdd_HHmmss") + ".txt"}
-    else
-    {$LogFileName = 'Log_' + $BuildID + "_" +  $(get-date).ToString("yyyyMMdd_HHmmss") + ".txt"}
+$LogFileName = 'Log_' + $LogFileNameBit + $LogFileNameBit2 + "_" + $BuildID + "_" +  $(get-date).ToString("yyyyMMdd_HHmmss") + ".txt"
 
     #then append the name of the log file to the path. This will always be C:\MarTechLog\ so it is a prerequiste of every environment that this folder exists
 
@@ -45,8 +55,6 @@ $Errored = 0
     #"--" + $BuildID
 
     #get every file that begins with the environment variable and ends in SQL
-
-
 
 
 Get-ChildItem  -Filter $Product*.sql | 
@@ -124,8 +132,6 @@ ForEach ($d in $Scripts)
 try
 {
 
-
-
     #try to run the contents of the file against the local database. If Rollback is true then only run the rollback script
 
     if (($Rollback -eq 'True' -and $d.Key -like '*rollback*') -or ($Rollback -eq 'False' -and $d.Key -notlike '*rollback*'))
@@ -140,7 +146,6 @@ try
 
 
         Invoke-Sqlcmd -InputFile $d.Key -ServerInstance $InstanceName -ErrorAction Stop
-        #Invoke-Sqlcmd -InputFile $d.Key -ServerInstance $InstanceName -ErrorAction Stop
         Add-Content $LogFileNameFull ($d.Key + " - Succeeded")}
    
    }
@@ -162,5 +167,7 @@ Add-Content $LogFileNameFull ($d.Key + " " + $_)
 
 if ($Errored -eq 0)
 {
-Add-Content $LogFileNameFull "Build was successful"
+$SuccessMessage = $LogFileNameBit2 + " was successful"
+Add-Content $LogFileNameFull $SuccessMessage
 }
+

@@ -12,7 +12,7 @@ else
 begin
 create table ad.Test(
 	TestID int identity(1,1) primary key,
-	Release varchar(20),
+	BuildID varchar(20),
 	TestType varchar(10),
 	TestDescription varchar(500),
 	TestCount1 int,
