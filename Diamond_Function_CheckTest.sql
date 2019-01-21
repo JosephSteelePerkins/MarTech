@@ -9,24 +9,34 @@ BEGIN
 END
 GO
 
-
-
 create function AD.CheckTest (@BuildID as varchar(20))
-returns bit
+returns int
 begin
 
 Declare @TestCount int
-Declare @Output bit
+Declare @Output int
+Declare @NoOfRows int
+
+--declare @BuildID varchar(20) = 'Build00001'
+-- if there are no test cases then return -1
+
+select @NoOfRows = count(1)
+from Diamond.ad.Test
+where BuildID = @BuildID
 
 select @TestCount = count(1) 
 from Diamond.ad.Test
-where BuildID = 'Build00001'
+where BuildID = @BuildID
 and isnull(TestCount1,'') <> isnull(TestCount2,'')
 
-if @TestCount = 0 
-set @Output = 1
+
+if @NoOfRows = 0
+set @Output = -1
 else
-set @Output = 0
+	if @TestCount = 0 
+	set @Output = 1
+	else
+	set @Output = 0
 
 return @Output
 

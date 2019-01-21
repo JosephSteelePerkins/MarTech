@@ -12,7 +12,7 @@ Set-Location $PSScriptRoot
 
 #$Product = "Diamond"
 #$Test = "False"
-#$Rollback = "True"
+#$Rollback = "False"
 
     #The log file will be called Test, Build or Rollback based on the parameters
 
@@ -119,7 +119,6 @@ Foreach-Object {
 }
 
     
-
     #re-order the hash table by the "value" ie the release order 
 
 $Scripts = $Scripts.GetEnumerator() | sort -Property value
@@ -171,3 +170,23 @@ $SuccessMessage = $LogFileNameBit2 + " was successful"
 Add-Content $LogFileNameFull $SuccessMessage
 }
 
+ #now check if the build passed testing, if not rollback or testing
+
+if($Rollback -eq 'False' -and $Test -eq 'False')
+{
+$SQL = "use Diamond select cast(ad.checktest('" + $BuildID + "') as int) Result"
+$QueryResult = ''
+
+$QueryResult = Invoke-Sqlcmd -ServerInstance "DESKTOP-CGRB0T0" -Database 'Diamond' -Query $SQL 
+
+$QueryResultColumn = $QueryResult.Result
+
+if ($QueryResultColumn -eq 1)
+{$TestResult = 'All testing passed'}
+elseif ($QueryResultColumn -eq 0)
+{$TestResult = 'Testing failed'}
+elseif ($QueryResultColumn -eq -1)
+{$TestResult = 'No test rows'}
+
+Add-Content $LogFileNameFull $TestResult
+}
