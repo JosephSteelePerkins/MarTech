@@ -141,6 +141,8 @@ try
         {
         if ($env:USERNAME -eq 'DBA')
             {$InstanceName = "DESKTOP-CGRB0T0\LIVE"}
+        elseif ($env:USERNAME -eq 'Developer')
+            {$InstanceName = "DESKTOP-CGRB0T0\DEVELOPMENT2"}
         else {$InstanceName = "(local)"}
 
 
@@ -177,7 +179,9 @@ if($Rollback -eq 'False' -and $Test -eq 'False')
 $SQL = "use Diamond select cast(ad.checktest('" + $BuildID + "') as int) Result"
 $QueryResult = ''
 
-$QueryResult = Invoke-Sqlcmd -ServerInstance "DESKTOP-CGRB0T0" -Database 'Diamond' -Query $SQL 
+
+$QueryResult = Invoke-Sqlcmd -ServerInstance $InstanceName -Database 'Diamond' -Query $SQL 
+
 
 $QueryResultColumn = $QueryResult.Result
 
