@@ -1,5 +1,7 @@
 --MAR-21*6 - populate table
 
+use Diamond
+
 update dw.Product
 set ProductTypeID =
 (Select ProductTypeID from dw.ProductType where ProductType = 'Subscription')

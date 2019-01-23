@@ -6,5 +6,5 @@ select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS where CONSTRAINT_TYPE = 'Fore
 )
 
 ALTER TABLE Diamond.dw.Product
-ADD CONSTRAINT FK_Product_ProductType FOREIGN KEY (ProductTypeID)     
+ADD CONSTRAINT FK_Product_ProductType FOREIGN KEY (ProductTypeID)   
     REFERENCES Diamond.dw.ProductType (ProductTypeID)
