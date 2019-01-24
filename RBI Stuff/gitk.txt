@@ -1,2 +1,0 @@
-bloody useful for looking at the log
-gitk
