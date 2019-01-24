@@ -1,17 +1,15 @@
-﻿
-param ([string]$BuildID='xxxxx', [string]$Rollback='False',[string]$Product,[string]$Test = 'True')
-
+﻿param ([string]$BuildID='xxxxx', [string]$Rollback='False',[string]$Product,[string]$Test = 'True')
 
 Set-Location $PSScriptRoot
 
     #enter the ID of the build/release. This will appear in all the scripts being run as part of this build.
 
-#$BuildID = "Build00001"
+#$BuildID = "MAR-22"
 
     #enter the environment
 
 #$Product = "Diamond"
-#$Test = "False"
+#$Test = "True"
 #$Rollback = "False"
 
     #The log file will be called Test, Build or Rollback based on the parameters
@@ -34,7 +32,6 @@ $LogFileName = 'Log_' + $LogFileNameBit + $LogFileNameBit2 + "_" + $BuildID + "_
 
 $LogFileNameFull = "C:\MarTechLog\" + $LogFileName
 
-
     if (Test-Path $LogFileNameFull) 
     {
       Remove-Item $LogFileNameFull
@@ -54,10 +51,10 @@ $Errored = 0
 
     #"--" + $BuildID
 
-    #get every file that begins with the environment variable and ends in SQL
+    #get every file that begins with the environment variable 
 
 
-Get-ChildItem  -Filter $Product*.sql | 
+Get-ChildItem  -Filter $Product*.* | 
 
     #loop through each file
 
@@ -77,10 +74,9 @@ Foreach-Object {
         #Write-Host 'Does BuildID equal Build00001' ($BuildID -eq 'Build00001')
         #$BuildID = 'Build00001'
 
-    $content | Where-Object {$_ -match ("--" + $BuildID)} |  Set-Variable  "line" 
+    $content | Where-Object {$_ -match ("--" + $BuildID) -or $_ -eq "--Regression"} |  Set-Variable  "line" 
 
-         #Write-Host $line 
-
+         
         #if the line variable is not empty (ie the file contains the release ID)...
 
     if ($line -ne "")
@@ -118,7 +114,6 @@ Foreach-Object {
     }
 }
 
-    
     #re-order the hash table by the "value" ie the release order 
 
 $Scripts = $Scripts.GetEnumerator() | sort -Property value
@@ -131,24 +126,40 @@ ForEach ($d in $Scripts)
 try
 {
 
+    #Write-Host $d.Key
     #try to run the contents of the file against the local database. If Rollback is true then only run the rollback script
 
     if (($Rollback -eq 'True' -and $d.Key -like '*rollback*') -or ($Rollback -eq 'False' -and $d.Key -notlike '*rollback*'))
     {
-     if ($Test-eq 'True')
-        {Add-Content $LogFileNameFull ($d.Key + " - Not Run")}
-    else
+        if ($Test-eq 'True')
         {
-        if ($env:USERNAME -eq 'DBA')
-            {$InstanceName = "DESKTOP-CGRB0T0\LIVE"}
-        elseif ($env:USERNAME -eq 'Developer')
-            {$InstanceName = "DESKTOP-CGRB0T0\DEVELOPMENT2"}
-        else {$InstanceName = "(local)"}
-
-
-        Invoke-Sqlcmd -InputFile $d.Key -ServerInstance $InstanceName -ErrorAction Stop
-        Add-Content $LogFileNameFull ($d.Key + " - Succeeded")}
-   
+            Add-Content $LogFileNameFull ($d.Key + " - Not Run")
+        }
+        else
+        {
+            if ($env:USERNAME -eq 'DBA')
+                {$InstanceName = "DESKTOP-CGRB0T0\LIVE" }
+            elseif ($env:USERNAME -eq 'Developer')
+                {$InstanceName = "DESKTOP-CGRB0T0\DEVELOPMENT2"}
+            else {$InstanceName = "(local)"}
+        
+            $FullFileName = $d.Key
+            $FileExtension =  $FullFileName.Substring($FullFileName.IndexOf(".")+1,3)
+            if ($FileExtension -eq 'sql' -or $FileExtension -eq 'ps1')
+                {
+                if ($FileExtension -eq 'sql')
+                    {
+                    Invoke-Sqlcmd -InputFile $d.Key -ServerInstance $InstanceName -ErrorAction Stop
+                     }
+                else
+                    {
+                    $ErrorActionPreference = 'Stop'
+                    &$FullFileName 
+                    $ErrorActionPreference = 'Continue'
+                    }
+                Add-Content $LogFileNameFull ($d.Key + " - Succeeded")
+                }
+          }
    }
 
 }
