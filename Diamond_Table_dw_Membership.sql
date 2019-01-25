@@ -28,7 +28,7 @@ create table dw.Membership(
 	SourceLastUpdateDate datetime,
 	CreateDate datetime default getdate(),
 	DeletedInSource bit,
-	SubscriptionStatusID int
+	SubscriptionStatusID int,
 	DespatchMethodID int
 	)
 end
