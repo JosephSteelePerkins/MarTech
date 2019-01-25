@@ -2,7 +2,7 @@
 
 use Diamond
 
-truncate table dw.SubscriptionStatus
+delete  dw.SubscriptionStatus
 
 insert into dw.SubscriptionStatus(SubscriptionStatus)
 values ('Active'),

@@ -2,7 +2,7 @@
 --Release00002 - add DeletedInSource
 --Release00005 - add SourceContactID field
 --Build00001
---MAR-23-5 - added SubscriptionStatusID
+--MAR-23*1 - added SubscriptionStatusID
 
 use Diamond
 
