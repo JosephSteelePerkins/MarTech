@@ -3,6 +3,7 @@
 --Release00005 - add SourceContactID field
 --Build00001
 --MAR-23*1 - added SubscriptionStatusID
+--MAR-24*01
 
 use Diamond
 
@@ -11,6 +12,7 @@ begin
 IF not EXISTS (select 1 FROM INFORMATION_SCHEMA.Columns WHERE TABLE_name = 'Membership' and TABLE_SCHEMA = 'dw' and column_name = 'DeletedInSource') alter table dw.Membership add DeletedInSource bit
 IF not EXISTS (select 1 FROM INFORMATION_SCHEMA.Columns WHERE TABLE_name = 'Membership' and TABLE_SCHEMA = 'dw' and column_name = 'SourceContactID') alter table dw.Membership add SourceContactID nvarchar(100)
 IF not EXISTS (select 1 FROM INFORMATION_SCHEMA.Columns WHERE TABLE_name = 'Membership' and TABLE_SCHEMA = 'dw' and column_name = 'SubscriptionStatusID') alter table dw.Membership add SubscriptionStatusID int
+IF not EXISTS (select 1 FROM INFORMATION_SCHEMA.Columns WHERE TABLE_name = 'Membership' and TABLE_SCHEMA = 'dw' and column_name = 'DespatchMethodID') alter table dw.Membership add DespatchMethodID int
 end
 else
 begin
@@ -27,6 +29,7 @@ create table dw.Membership(
 	CreateDate datetime default getdate(),
 	DeletedInSource bit,
 	SubscriptionStatusID int
+	DespatchMethodID int
 	)
 end
 
