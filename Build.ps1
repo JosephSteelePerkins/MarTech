@@ -4,7 +4,7 @@ Set-Location $PSScriptRoot
 
     #enter the ID of the build/release. This will appear in all the scripts being run as part of this build.
 
-#$BuildID = "MAR-22"
+#$BuildID = "MAR-23"
 
     #enter the environment
 
@@ -149,8 +149,8 @@ try
                 {
                 if ($FileExtension -eq 'sql')
                     {
-                    $StringArray = "BuildID=' $BuildID '"
-                    #Write-Host $StringArray
+                    $StringArray = "BuildID='$BuildID '"
+                    Write-Host $StringArray
                     Invoke-Sqlcmd -InputFile $d.Key -ServerInstance $InstanceName -ErrorAction Stop -Variable $StringArray
                      }
                 else
@@ -188,6 +188,7 @@ Add-Content $LogFileNameFull $SuccessMessage
 if($Rollback -eq 'False' -and $Test -eq 'False')
 {
 $SQL = "use Diamond select cast(ad.checktest('" + $BuildID + "') as int) Result"
+
 $QueryResult = ''
 
 
