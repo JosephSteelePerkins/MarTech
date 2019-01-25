@@ -9,7 +9,7 @@ Set-Location $PSScriptRoot
     #enter the environment
 
 #$Product = "Diamond"
-#$Test = "True"
+#$Test = "False"
 #$Rollback = "False"
 
     #The log file will be called Test, Build or Rollback based on the parameters
@@ -149,7 +149,9 @@ try
                 {
                 if ($FileExtension -eq 'sql')
                     {
-                    Invoke-Sqlcmd -InputFile $d.Key -ServerInstance $InstanceName -ErrorAction Stop
+                    $StringArray = "BuildID=' $BuildID '"
+                    #Write-Host $StringArray
+                    Invoke-Sqlcmd -InputFile $d.Key -ServerInstance $InstanceName -ErrorAction Stop -Variable $StringArray
                      }
                 else
                     {
@@ -165,14 +167,12 @@ try
 }
 catch
 {
-
     #if it fails then increment the Errored variable and add the error message to the log file
 
 $Errored = $Errored + 1
 Add-Content $LogFileNameFull ($d.Key + " " + $_) 
 
 }
-
 }
 
     #if there are no errors then add success to the log file
