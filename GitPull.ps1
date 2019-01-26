@@ -1,5 +1,5 @@
-﻿#Set-Location $PSScriptRoot
-Set-Location 'C:\Users\User\MarTech'
+﻿Set-Location $PSScriptRoot
+#Set-Location 'C:\Users\DBA\MarTech'
 
     #first prepare the log file.
 
@@ -57,14 +57,18 @@ exit}
 $ErrorActionPreference = "continue"
 
 
-
 git fetch
-git checkout master
+
+#incase there are local changes, remove them with a reset
+
+git add .
+git reset --hard head
 
 
+#then checkout release branch
 #we need to look at the output of this git statement. It will determine what we do next
 
-$outputm = git checkout -b $ReleaseID origin/$ReleaseID 2>&1
+$outputm = git checkout -b $ReleaseID 
 
 
    #check to see if there is a fatal git error
