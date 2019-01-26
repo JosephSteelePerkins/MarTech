@@ -68,7 +68,7 @@ git reset --hard head
 #then checkout release branch
 #we need to look at the output of this git statement. It will determine what we do next
 
-$outputm = git checkout -b $ReleaseID 
+$outputm = git checkout -b $ReleaseID 2>&1
 
 
    #check to see if there is a fatal git error
