@@ -2,6 +2,7 @@
 --Build00001
 --MAR-21*3 -- add ProductTypeID field
 --MAR101*01
+--MAR102*01
 
 use Diamond
 
@@ -13,6 +14,9 @@ ALTER TABLE dw.product ADD ProductTypeID INT
 
 IF NOT EXISTS (select 1 FROM INFORMATION_SCHEMA.Columns WHERE TABLE_name = 'product' and column_name = 'ColumnA')
 ALTER TABLE dw.product ADD ColumnA INT
+
+--IF NOT EXISTS (select 1 FROM INFORMATION_SCHEMA.Columns WHERE TABLE_name = 'product' and column_name = 'ColumnB')
+--ALTER TABLE dw.product ADD ColumnB varchar(5)
 
 
 end
